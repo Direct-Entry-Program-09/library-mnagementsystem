@@ -53,7 +53,7 @@ http.addEventListener('readystatechange',()=>{
 
 // 3. Open the request
 
-http.open('GET',`http://localhost:8080/lms/api/members?size=${pageSize}&page=${page}`,true);
+http.open('GET',`http://localhost:8080/lms/api/members?size=${pageSize}&page=${page}&q=${query}`,true);
 // http.open('GET','url of the real server when it is created/members',true);
 
 // 4.Set additional information for the request
@@ -103,10 +103,10 @@ $('#pagination > .pagination').click((eventData)=>{
     }
 });
 
-// $('#txt-search').on('input',()=>{
-//     page=1;
-//     getMembers();
-// });
+$('#txt-search').on('input',()=>{
+    page=1;
+    getMembers();
+});
 
 $('#tbl-members tbody').keyup((eventData)=>{
     if(eventData.which===38){
