@@ -1,0 +1,48 @@
+header{
+    position: relative;
+    h3 {
+        ion-icon{
+            vertical-align:middle;
+            padding-right: 10px;
+        }
+    }
+
+    a{
+        position: absolute;
+        right: 10px;
+        top: 5px;
+        font-size: 2.5rem;
+    }
+}
+
+#tbl-members{
+    th:first-child,
+    tbody td:first-child{
+        max-width: 170px;
+        min-width: 110px;
+        word-break: keep-all;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        // width: 75px;
+        text-align: center;
+    }
+    tbody tr td{
+        border: none;
+    }
+    tbody tr:focus{
+        background-color: rgb(209, 187, 187);
+        border: none;
+    
+    }
+    th:nth-child(2),
+    tbody td:nth-child(2){
+        width: 250px;
+    }
+
+    th:last-child,
+    tbody td:last-child{
+        width: 150px;
+        text-align: center;
+    }    
+}
