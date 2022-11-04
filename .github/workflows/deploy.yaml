@@ -25,7 +25,6 @@ jobs:
 
     - name: Zipping to deploy
       run: zip -r dist.zip css js pages index.html
-
     - name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v0'
       with:
@@ -35,7 +34,7 @@ jobs:
       uses: google-github-actions/setup-gcloud@v0
 
     - name: Deploying the zip
-      uses: gcloud compute scp dist.zip dep-9-vm:/opt/apache/apache-tomcat-10.1.1/webapps/lms-backend
+      uses: gcloud compute scp --zone="asia-south1-a" dist.zip dep-9-vm:/opt/apache/apache-tomcat-10.1.1/webapps/lms-backend
 
     - name: Clean up old stuff
       run: >
