@@ -42,4 +42,4 @@ jobs:
         uses: google-github-actions/setup-gcloud@v0
 
       - name: Deploy the dist.zip
-        uses: gcloud compute scp --zone="asia-south1-a" dist.zip dep-9-vm:/opt
+        uses: gcloud compute scp --zone="asia-south1-a" dist.zip root@dep-9-vm:/opt
