@@ -1,0 +1,31 @@
+name: "CI/CD Pipeline for LMS Front-End"
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checking out the repo
+      uses: actions/checkout@v3
+
+    - name: Installing NodeJS
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Installing SASS
+      run: npm install -g sass
+
+    - name: Compiling SCSS files to CSS
+      run: sass scss:css
+
+    - name: Zipping to deploy
+      run: zip -r dist.zip css js pages index.html
+
+    - name: Testing
+      run: ls -la .
+
