@@ -39,7 +39,7 @@ jobs:
     - name: Clean up old stuff
       run: >
         gcloud compute ssh --zone="asia-south1-a" dep-9-vm 
-        --commands="sudo rm -rf /opt/apache/apache-tomcat-10.1.1/webapps/lms-backend/css
+        --command="sudo rm -rf /opt/apache/apache-tomcat-10.1.1/webapps/lms-backend/css
         /opt/apache/apache-tomcat-10.1.1/webapps/lms-backend/pages
         /opt/apache/apache-tomcat-10.1.1/webapps/lms-backend/js
         /opt/apache/apache-tomcat-10.1.1/webapps/lms-backend/index.html
@@ -48,12 +48,12 @@ jobs:
     - name: Extracting zip
       run: >
         gcloud compute ssh --zone="asia-south1-a" dep-9-vm
-        --commands="sudo unzip /opt/apache/apache-tomcat-10.1.1/webapps/lms-backend/dist.zip -d /opt/apache/apache-tomcat-10.1.1/webapps/lms-backend"
+        --command="sudo unzip /opt/apache/apache-tomcat-10.1.1/webapps/lms-backend/dist.zip -d /opt/apache/apache-tomcat-10.1.1/webapps/lms-backend"
 
     - name: Cleaning left overs
       run: >
         gcloud compute ssh --zone="asia-south1-a" dep-9-vm
-        --commands="sudo rm /opt/apache/apache-tomcat-10.1.1/webapps/lms-backend/dist.zip"
+        --command="sudo rm /opt/apache/apache-tomcat-10.1.1/webapps/lms-backend/dist.zip"
 
 
       
