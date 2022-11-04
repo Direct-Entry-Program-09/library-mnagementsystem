@@ -9,20 +9,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checking out the latest commit 
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - name: Installing node js
+        uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - run: npm install -g sass
+      - name: Installing Sass
+        run: npm install -g sass
 
-      - run: sass scss:css
+      - name: Compiling Scss files to css
+        run: sass scss:css
 
-      - run: mkdir dist
+      - name: Creates the dist directory
+        run: mkdir dist
 
-      - run: cp -r css pages js index.html dist/
+      - name: Copying everything to the dist directory
+        run: cp -r css pages js index.html dist/
 
-      - run: zip -r dist.zip dist/
+      - name: Creating a zip file for deployment
+        run: zip -r dist.zip dist/
 
-      - run: ls -la .
+      - name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+          
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
