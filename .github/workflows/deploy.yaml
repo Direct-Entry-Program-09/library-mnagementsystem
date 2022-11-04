@@ -33,7 +33,7 @@ jobs:
 
 
       - name: coppying everythings to the dist directory
-        run: cp -r css page js index.html dist/
+        run: cp -r css pages js index.html dist/
 
       - name: Creating a zip file for deployment
         run: zip -r dist.zip dist/
