@@ -1,5 +1,6 @@
 // 1. Initialize a  XMLHttpRequest Object
-const API_END_POINT='http://35.200.157.92:8080/lms/api';
+// const API_END_POINT='http://35.200.157.92:8080/lms/api';
+const API_END_POINT = 'http://localhost:8080/lms/api';
 
 const http = new XMLHttpRequest();
 const pageSize = 5;
@@ -65,6 +66,11 @@ function getMembers(query = `${$('#txt-search').val()}`) {  // if we do not pass
 }
 function initPagination(totalMembers) {
     const totalPages = Math.ceil(totalMembers / pageSize);
+    if (page > totalPages) {
+        page = totalPages;
+        getMembers();
+        return;
+    }
     if (totalPages <= 1) {
         $("#pagination").addClass('d-none');
     } else {
@@ -136,9 +142,10 @@ $(document).keyup((eventData) => {
 
 $("#btn-new-member").click(() => {
     const frmMemberDetail = new bootstrap.Modal(document.getElementById('frm-member-detail'));
-    $("#frm-member-detail").addClass('new').on('shown.bs.modal', () => {
+    $("#frm-member-detail").removeClass('edit').addClass('new').on('shown.bs.modal', () => {
         $("#txt-name").focus();
     });
+    $('#txt-id', '#txt-name', '#txt-address', '#txt-contact').attr('disabled', false).val('');
     frmMemberDetail.show();
 });
 
@@ -178,7 +185,7 @@ $("#btn-save").click(async () => {
         const { id } = await saveMember();  // asking to go inside the saveMember() method, and inside the 
         // saveMember() method it consume the web service and return the object that it saved in the database. After that here we extract the id using const {id} instead of getting the complete object
         $("#overlay").addClass("d-none");
-        showToast(`Member has been Saved successfully with the ID :${id}`,'success');   // here we put `` cause we wanna embed the id , if not embedding that we can use " "
+        showToast(`Member has been Saved successfully with the ID :${id}`, 'success');   // here we put `` cause we wanna embed the id , if not embedding that we can use " "
         $("#txt-name", "#txt-address", "#txt-contact").val("");
         $("#txt-name").focus();
     } catch (e) {
@@ -187,6 +194,84 @@ $("#btn-save").click(async () => {
         $("#txt-name").focus();
     }
 });
+
+$("#btn-edit").click(() => {
+    $("#frm-member-detail").addClass('edit');
+
+    $("#txt-name", "#txt-address", "txt-contact").attr('disabled', false);
+});
+
+
+
+
+/////////////////////////////////      ===================================================================================== check this await
+
+$("#btn-delete").click(async () => {
+    // fetch(`${API_END_POINT}/members/${}`).val();
+    $("#over-lay").removeClass("d-none");
+
+    try {
+        const response=await fetch(`${API_END_POINT}/members/${$('#txt-id')}`,{method:'DELETE'});
+        if(response.status === 204){
+            showToast('Member has been deleted successfully','success');
+            $("#btn-close").click();
+            const frmMemberDetail=new bootstrap.Modal(document.getElementById('frm-member-detail'));
+            frmMemberDetail.hide();
+        }else{
+            throw new Error(response.status);
+        }
+    } catch (error) {
+        showToast("Failed to delete the member, Try again");
+    } finally {
+        $("#over-lay").addClass("d-none");
+    }
+});
+
+$("#btn-update").click(async () => {
+    $("#over-lay").removeClass("d-none");
+    const name = $("#txt-name").val();
+    const address = $("#txt-address").val();
+    const contact = $("txt-contact").val();
+    let validated = true;
+
+    $("#txt-name, #txt-address, #txt-contact").removeClass('is-invalid');
+    if (!/^[A-Za-z ]+$/.test(contact)) {
+        $("#txt-contact").addClass('is-invalid').select().focus();
+        validated = false;
+    }
+    if (!/^[A-Za-z0-9#,.-;:/]+$/.test(address)) {
+        $("#txt-address").addClass('is-invalid').select().focus();
+        validated = false;
+    }
+
+    if (!/^[A-Za-z ]+$/.test(name)) {
+        $("#txt-name").addClass('is-invalid').select().focus();
+        validated = false;
+    }
+    if (!validated) return;
+    try {
+        const response = await fetch(`${API_END_POINT}/members/${$("#txt-id").val()}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: $("#txt-id").val(), name, address, contact
+            })
+        });
+        if (response.status === 204) {
+            showToast('Member has been successfully updated');
+        } else {
+            throw new Error(response.status);
+        }
+    } catch (error) {
+        showToast('Failed to update the member, try again !');
+    }finally {
+        $("#over-lay").addClass("d-none");
+    }
+});
+
+
 
 // function saveMember(){
 // return new Promise((resolve,reject)=>{
@@ -267,6 +352,74 @@ function showToast(msg, msgType = 'warning') {
 }
 
 
-$("#frm-member-detail").on('hidden.bs.modal',()=>{
+$("#frm-member-detail").on('hidden.bs.modal', () => {
     getMembers();
 });
+
+$('#tbl-members tbody').click(({ target }) => {
+    if (!target) return;
+    let rowElm = target.closest('tr');
+    // if(target instanceof HTMLTableRowElement){
+    //     rowElm=target;
+    // }else if(target instanceof HTMLTableCellElement){
+    //     rowElm=target.parentElement;
+    // }else{
+    //     return;
+    // }
+    console.log(rowElm.cells[0].innerText);
+    getMemberDetails($(rowElm.cells[0]).text());
+});
+
+async function getMemberDetails(memberId) {
+    try {
+        const response = await fetch(`${API_END_POINT}/members/${memberId}`);
+        if (response.ok) {
+            const member = await response.json();
+            const frmMemberDetail = new bootstrap.Modal(document.getElementById('frm-member-detail'));
+
+
+            console.log(member.id, member.name, member.address, member.contact);
+            $("#frm-member-detail").removeClass('new').removeClass('new');
+            $("#txt-id").attr('disabled', 'true').val(member.id);
+            $("#txt-name").attr('disabled', 'true').val(member.name);
+            $("#txt-address").attr('disabled', 'true').val(member.address);
+            $("#txt-address").attr('disabled', 'true').val(member.contact);
+
+
+            frmMemberDetail.show();
+
+
+        } else {
+            throw new Error(response.status);
+        }
+
+    } catch (error) {
+        showToast('Failed to fetch the member details');
+    }
+    // console.log("get member details",memberId);
+    // const http=new XMLHttpRequest();
+    // http.addEventListener('readystatechange',()=>{
+    //     if(http.readyState===XMLHttpRequest.DONE){
+    //         if(http.status=== 200){
+    //             const member=JSON.parse(http.responseText);
+    //             const frmMemberDetail = new bootstrap.Modal(document.getElementById('frm-member-detail'));
+
+    //             console.log(member.id, member.name, member.address, member.contact);
+    //             $("#frm-member-detail").removeClass('new');
+    //             $("#txt-id").attr('disabled','true').val(member.id);
+    //             $("#txt-name").attr('disabled','true').val(member.name);
+    //             $("#txt-address").attr('disabled','true').val(member.address);
+    //             $("#txt-address").attr('disabled','true').val(member.contact);
+
+
+    //             frmMemberDetail.show();
+    //         }else{
+    //             showToast('Failed to fetch the member details');
+    //         }
+    //     }
+
+    // });
+    // http.open('GET',`${API_END_POINT}/members/${memberId}`,true);
+    // http.send();
+
+}
