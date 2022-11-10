@@ -1,6 +1,6 @@
 // 1. Initialize a  XMLHttpRequest Object
-// const API_END_POINT='http://35.200.157.92:8080/lms/api';
-const API_END_POINT = 'http://localhost:8080/lms/api';
+const API_END_POINT='http://35.200.157.92:8080/lms/api';
+// const API_END_POINT = 'http://localhost:8080/lms/api';
 const pageSize = 8;
 let page = 1;
 
